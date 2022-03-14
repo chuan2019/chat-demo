@@ -1,6 +1,6 @@
 # chat demo
 
-Usage: the usage below has been tested on mac laptop
+Usage: the usage below has been tested on mac os and ubuntu 20.04.1
 
 step 1: start redis sever
 
