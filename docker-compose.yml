@@ -9,8 +9,5 @@ services:
           - REDIS_REPLICATION_MODE=master
         ports:
           - "16379:6379"
-        #volumes:
-        #  - ./data/redis_db/data:/var/lib/redis
-        #  - ./data/redis_db/conf:/usr/local/etc/redis/redis.conf
         command: redis-server --requirepass redis123
 
