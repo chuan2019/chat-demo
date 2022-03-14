@@ -1,0 +1,260 @@
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    83  100    64  100    19   2064    612 --:--:-- --:--:-- --:--:--  2677
+{
+  "message": "client \"alex\" login failed, error code: 2."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    64  100    46  100    18   4181   1636 --:--:-- --:--:-- --:--:--  6400
+{
+  "message": "analyst \"joe\" logged in."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    68  100    48  100    20   6857   2857 --:--:-- --:--:-- --:--:--  9714
+{
+  "message": "analyst \"steve\" logged in."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    64  100    46  100    18   6571   2571 --:--:-- --:--:-- --:--:--  9142
+{
+  "message": "analyst \"bob\" logged in."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    75  100    56  100    19   3294   1117 --:--:-- --:--:-- --:--:--  4411
+{
+  "message": "alex logged in, room: room:joe:alex."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    77  100    58  100    19   3411   1117 --:--:-- --:--:-- --:--:--  4529
+{
+  "message": "mary logged in, room: room:steve:mary."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    75  100    56  100    19   3111   1055 --:--:-- --:--:-- --:--:--  4166
+{
+  "message": "jack logged in, room: room:bob:jack."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    75  100    56  100    19   3294   1117 --:--:-- --:--:-- --:--:--  4411
+{
+  "message": "mike logged in, room: room:joe:mike."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    47  100    47    0     0   5222      0 --:--:-- --:--:-- --:--:--  5875
+{
+  "message": "client \"mary\" logged out."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    77  100    58  100    19   4461   1461 --:--:-- --:--:-- --:--:--  5923
+{
+  "message": "mary logged in, room: room:steve:mary."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    47  100    47    0     0   5875      0 --:--:-- --:--:-- --:--:--  5875
+{
+  "message": "client \"mary\" logged out."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    75  100    56  100    19   4307   1461 --:--:-- --:--:-- --:--:--  5769
+{
+  "message": "mary logged in, room: room:bob:mary."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    47  100    47    0     0   5875      0 --:--:-- --:--:-- --:--:--  5875
+{
+  "message": "client \"jack\" logged out."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    75  100    56  100    19   4000   1357 --:--:-- --:--:-- --:--:--  5357
+{
+  "message": "jack logged in, room: room:joe:jack."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    83  100    64  100    19   8000   2375 --:--:-- --:--:-- --:--:-- 10375
+{
+  "message": "client \"mary\" login failed, error code: 1."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   117  100    68  100    49  11333   8166 --:--:-- --:--:-- --:--:-- 19500
+{
+  "message": "client alex is not communicating with steve now."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   105  100    70  100    35   8750   4375 --:--:-- --:--:-- --:--:-- 13125
+{
+  "message": "message from \"alex\" is sent to \"room:joe:alex\""
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   127  100    69  100    58   7666   6444 --:--:-- --:--:-- --:--:-- 14111
+{
+  "message": "message from \"joe\" is sent to \"room:joe:alex\""
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   109  100    70  100    39  10000   5571 --:--:-- --:--:-- --:--:-- 15571
+{
+  "message": "message from \"alex\" is sent to \"room:joe:alex\""
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   115  100    69  100    46   8625   5750 --:--:-- --:--:-- --:--:-- 14375
+{
+  "message": "message from \"joe\" is sent to \"room:joe:alex\""
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   221  100   221    0     0  27625      0 --:--:-- --:--:-- --:--:-- 27625
+{
+  "room:joe:alex": [
+    "{\"alex\": \"hi, joe, how are you?\"}", 
+    "{\"joe\": \"I am good, thanks, how are you?\"}", 
+    "{\"alex\": \"I am good too. Thank you!\"}", 
+    "{\"joe\": \"how can I help you?\"}"
+  ]
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   269  100   269    0     0  29888      0 --:--:-- --:--:-- --:--:-- 29888
+{
+  "room:joe:alex": [
+    "{\"alex\": \"hi, joe, how are you?\"}", 
+    "{\"joe\": \"I am good, thanks, how are you?\"}", 
+    "{\"alex\": \"I am good too. Thank you!\"}", 
+    "{\"joe\": \"how can I help you?\"}"
+  ], 
+  "room:joe:jack": [], 
+  "room:joe:mike": []
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   105  100    69  100    36   8625   4500 --:--:-- --:--:-- --:--:-- 13125
+{
+  "message": "message from \"joe\" is sent to \"room:joe:jack\""
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   105  100    70  100    35   8750   4375 --:--:-- --:--:-- --:--:-- 13125
+{
+  "message": "message from \"jack\" is sent to \"room:joe:jack\""
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   143  100    69  100    74   8625   9250 --:--:-- --:--:-- --:--:-- 17875
+{
+  "message": "message from \"joe\" is sent to \"room:joe:jack\""
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   177  100   177    0     0  19666      0 --:--:-- --:--:-- --:--:-- 19666
+{
+  "room:joe:jack": [
+    "{\"joe\": \"Hey Jack!\"}", 
+    "{\"jack\": \"Hi, Joe! How are you?\"}", 
+    "{\"joe\": \"I am good, thank you! How can I help you today?\"}"
+  ]
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   420  100   420    0     0  42000      0 --:--:-- --:--:-- --:--:-- 42000
+{
+  "room:joe:alex": [
+    "{\"alex\": \"hi, joe, how are you?\"}", 
+    "{\"joe\": \"I am good, thanks, how are you?\"}", 
+    "{\"alex\": \"I am good too. Thank you!\"}", 
+    "{\"joe\": \"how can I help you?\"}"
+  ], 
+  "room:joe:jack": [
+    "{\"joe\": \"Hey Jack!\"}", 
+    "{\"jack\": \"Hi, Joe! How are you?\"}", 
+    "{\"joe\": \"I am good, thank you! How can I help you today?\"}"
+  ], 
+  "room:joe:mike": []
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   177  100   177    0     0  19666      0 --:--:-- --:--:-- --:--:-- 19666
+{
+  "room:joe:jack": [
+    "{\"joe\": \"Hey Jack!\"}", 
+    "{\"jack\": \"Hi, Joe! How are you?\"}", 
+    "{\"joe\": \"I am good, thank you! How can I help you today?\"}"
+  ]
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   269  100   269    0     0  22416      0 --:--:-- --:--:-- --:--:-- 22416
+{
+  "room:joe:alex": [
+    "{\"alex\": \"hi, joe, how are you?\"}", 
+    "{\"joe\": \"I am good, thanks, how are you?\"}", 
+    "{\"alex\": \"I am good too. Thank you!\"}", 
+    "{\"joe\": \"how can I help you?\"}"
+  ], 
+  "room:joe:jack": [], 
+  "room:joe:mike": []
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    87  100    87    0     0  14500      0 --:--:-- --:--:-- --:--:-- 14500
+{
+  "message": "analyst \"joe\" cannot logout yet, some conversation still ongoing."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    47  100    47    0     0   5875      0 --:--:-- --:--:-- --:--:--  5875
+{
+  "message": "client \"alex\" logged out."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    34  100    34    0     0   8500      0 --:--:-- --:--:-- --:--:--  8500
+{
+  "message": "login required"
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    47  100    47    0     0   5222      0 --:--:-- --:--:-- --:--:--  5222
+{
+  "message": "client \"jack\" logged out."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    47  100    47    0     0   5222      0 --:--:-- --:--:-- --:--:--  5222
+{
+  "message": "client \"mike\" logged out."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    47  100    47    0     0   4700      0 --:--:-- --:--:-- --:--:--  4700
+{
+  "message": "analyst \"joe\" logged out."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    49  100    49    0     0   4900      0 --:--:-- --:--:-- --:--:--  5444
+{
+  "message": "analyst \"steve\" logged out."
+}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    47  100    47    0     0   4272      0 --:--:-- --:--:-- --:--:--  4272
+{
+  "message": "analyst \"bob\" logged out."
+}
