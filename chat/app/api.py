@@ -72,7 +72,7 @@ def client_logout():
              if any chat room is open, close it
              deactive the session
     """
-    # after `login_status` applied, a client must be currently online
+    # after `login_required` applied, a client must be currently online
     nickname = session['user']['nickname']
     user_type = session['user']['user_type']
     if user_type != 'client':
