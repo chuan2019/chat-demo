@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>app.redis_utils &mdash; Chat Demo 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=af2ce170"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Chat Demo
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">app</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Chat Demo</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../app.html">app</a></li>
+      <li class="breadcrumb-item active">app.redis_utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for app.redis_utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;chat.app.redis_utils&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">session</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">logging</span>
+<span class="kn">from</span> <span class="nn">.config</span> <span class="kn">import</span> <span class="n">get_config</span>
+
+<span class="n">redis_client</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span><span class="o">.</span><span class="n">redis_client</span>
+
+<span class="n">threads</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">subscribers</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="initiate_chat"><a class="viewcode-back" href="../../app.html#app.redis_utils.initiate_chat">[docs]</a><span class="k">def</span> <span class="nf">initiate_chat</span><span class="p">(</span><span class="n">nickname</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    purpose: create a (private) chat room, if any analyst is online</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># step 1: validate nickname</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nickname</span><span class="o">.</span><span class="n">isalnum</span><span class="p">():</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">nickname</span><span class="si">}</span><span class="s1">&quot; is not alphanumeric. Nickname has to be alphanumeric.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">rooms</span> <span class="o">=</span> <span class="n">get_rooms</span><span class="p">(</span><span class="s1">&#39;client&#39;</span><span class="p">,</span> <span class="n">nickname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rooms</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">end_chat</span><span class="p">(</span><span class="n">nickname</span><span class="p">)</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">nickname</span><span class="si">}</span><span class="s1">&quot; is online already, the session is expired, please try login again&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="c1"># step 2: find the next analyst</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">redis_client</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;analysts_online&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">redis_client</span><span class="o">.</span><span class="n">zcard</span><span class="p">(</span><span class="s1">&#39;analysts_online&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;no analyst online yet, please try again later.&#39;</span><span class="p">)</span>
+        <span class="n">session</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">return</span> <span class="mi">2</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">current_analyst</span> <span class="o">=</span> <span class="n">redis_client</span><span class="o">.</span><span class="n">incr</span><span class="p">(</span><span class="s1">&#39;current_analyst&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">current_analyst</span> <span class="o">&gt;=</span> <span class="n">redis_client</span><span class="o">.</span><span class="n">zcard</span><span class="p">(</span><span class="s1">&#39;analysts_online&#39;</span><span class="p">):</span>
+        <span class="n">current_analyst</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">redis_client</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;current_analyst&#39;</span><span class="p">,</span> <span class="n">current_analyst</span><span class="p">)</span>
+    <span class="c1"># step 3: create a private room between the analyst and requesting client</span>
+    <span class="c1">#         we create the room &quot;lazily&quot;, i.e. it is not actually created until</span>
+    <span class="c1">#         either client or analyst send the first message</span>
+    <span class="n">analyst</span> <span class="o">=</span> <span class="n">redis_client</span><span class="o">.</span><span class="n">zrange</span><span class="p">(</span><span class="s1">&#39;analysts_online&#39;</span><span class="p">,</span> <span class="n">current_analyst</span><span class="p">,</span> <span class="n">current_analyst</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span>
+    <span class="n">analyst</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">analyst</span><span class="p">)</span>
+    <span class="n">room_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;room:</span><span class="si">{</span><span class="n">analyst</span><span class="p">[</span><span class="s2">&quot;nickname&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">nickname</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="k">if</span> <span class="n">redis_client</span><span class="o">.</span><span class="n">zadd</span><span class="p">(</span><span class="n">room_id</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;(private) chat-room &quot;</span><span class="si">{</span><span class="n">room_id</span><span class="si">}</span><span class="s1">&quot; is created.&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;creating (private) chat-room &quot;</span><span class="si">{</span><span class="n">room_id</span><span class="si">}</span><span class="s1">&quot; failed.&#39;</span><span class="p">)</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">return</span> <span class="mi">3</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="c1"># step 4: add nickname into the clients_online set, if it does not exist yet</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">redis_client</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;clients_online&#39;</span><span class="p">)</span> <span class="ow">or</span> \
+        <span class="ow">not</span> <span class="n">redis_client</span><span class="o">.</span><span class="n">sismember</span><span class="p">(</span><span class="s1">&#39;clients_online&#39;</span><span class="p">,</span> <span class="n">nickname</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">redis_client</span><span class="o">.</span><span class="n">sadd</span><span class="p">(</span><span class="s1">&#39;clients_online&#39;</span><span class="p">,</span> <span class="n">nickname</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;adding client &quot;</span><span class="si">{</span><span class="n">nickname</span><span class="si">}</span><span class="s1">&quot; into the online clients list failed&#39;</span><span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="k">return</span> <span class="mi">4</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">pubsub</span> <span class="o">=</span> <span class="n">redis_client</span><span class="o">.</span><span class="n">pubsub</span><span class="p">(</span><span class="n">ignore_subscribe_messages</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">subscribers</span><span class="p">[</span><span class="n">nickname</span><span class="p">]</span> <span class="o">=</span> <span class="n">pubsub</span>
+    <span class="n">threads</span><span class="p">[</span><span class="n">room_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">subscribe_room</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">room_id</span><span class="p">,</span><span class="n">pubsub</span><span class="p">,))</span>
+    <span class="n">threads</span><span class="p">[</span><span class="n">room_id</span><span class="p">]</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">threads</span><span class="p">[</span><span class="n">room_id</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="n">room_id</span></div>
+
+<div class="viewcode-block" id="end_chat"><a class="viewcode-back" href="../../app.html#app.redis_utils.end_chat">[docs]</a><span class="k">def</span> <span class="nf">end_chat</span><span class="p">(</span><span class="n">nickname</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    purpose: close a (private) chat room, only client can close the chat room</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># step 1: validate nickname</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nickname</span><span class="o">.</span><span class="n">isalnum</span><span class="p">():</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">nickname</span><span class="si">}</span><span class="s1">&quot; is not alphanumeric. Nickname has to be alphanumeric.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="c1"># step 2: client unsubscribe from the room</span>
+    <span class="n">subscribers</span><span class="p">[</span><span class="n">nickname</span><span class="p">]</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">()</span> <span class="c1"># after this step the daemon thread will stop</span>
+    <span class="c1"># step 3: client goes offline</span>
+    <span class="n">redis_client</span><span class="o">.</span><span class="n">srem</span><span class="p">(</span><span class="s1">&#39;clients_online&#39;</span><span class="p">,</span> <span class="n">nickname</span><span class="p">)</span>
+    <span class="c1"># step 4: closing all chat rooms the client joined</span>
+    <span class="n">rooms</span> <span class="o">=</span> <span class="n">get_rooms</span><span class="p">(</span><span class="s1">&#39;client&#39;</span><span class="p">,</span> <span class="n">nickname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rooms</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">room</span> <span class="ow">in</span> <span class="n">rooms</span><span class="p">:</span>
+            <span class="n">redis_client</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">room</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="refresh_online_status"><a class="viewcode-back" href="../../app.html#app.redis_utils.refresh_online_status">[docs]</a><span class="k">def</span> <span class="nf">refresh_online_status</span><span class="p">(</span><span class="n">user_type</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">nickname</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    purpose: refresh online status</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># validate nickname</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nickname</span><span class="o">.</span><span class="n">isalnum</span><span class="p">():</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">nickname</span><span class="si">}</span><span class="s1">&quot; is not alphanumeric. Nickname has to be alphanumeric.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">user_type</span> <span class="o">==</span> <span class="s1">&#39;client&#39;</span><span class="p">:</span>
+        <span class="n">redis_client</span><span class="o">.</span><span class="n">sadd</span><span class="p">(</span><span class="s1">&#39;clients_online&#39;</span><span class="p">,</span> <span class="n">nickname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">user_type</span> <span class="o">==</span> <span class="s1">&#39;analyst&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">redis_client</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;current_analyst&#39;</span><span class="p">):</span>
+            <span class="n">redis_client</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;current_analyst&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># no analyst is communicated yet</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;nickname&#39;</span><span class="p">:</span> <span class="n">nickname</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()}</span>
+        <span class="n">redis_client</span><span class="o">.</span><span class="n">zadd</span><span class="p">(</span><span class="s1">&#39;analysts_online&#39;</span><span class="p">,</span> <span class="p">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">):</span> <span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])})</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="get_rooms"><a class="viewcode-back" href="../../app.html#app.redis_utils.get_rooms">[docs]</a><span class="k">def</span> <span class="nf">get_rooms</span><span class="p">(</span><span class="n">user_type</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">nickname</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    purpose: retrieve all chat rooms the user is currently joined</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rooms</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">user_type</span> <span class="o">==</span> <span class="s1">&#39;client&#39;</span><span class="p">:</span>
+        <span class="n">rooms</span> <span class="o">=</span> <span class="n">redis_client</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;room:*:</span><span class="si">{</span><span class="n">nickname</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">user_type</span> <span class="o">==</span> <span class="s1">&#39;analyst&#39;</span><span class="p">:</span>
+        <span class="n">rooms</span> <span class="o">=</span> <span class="n">redis_client</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;room:</span><span class="si">{</span><span class="n">nickname</span><span class="si">}</span><span class="s1">:*&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rooms</span></div>
+
+<div class="viewcode-block" id="go_offline"><a class="viewcode-back" href="../../app.html#app.redis_utils.go_offline">[docs]</a><span class="k">def</span> <span class="nf">go_offline</span><span class="p">(</span><span class="n">user_type</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">nickname</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    purpose: utility function for logout operation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># validate nickname</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nickname</span><span class="o">.</span><span class="n">isalnum</span><span class="p">():</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">nickname</span><span class="si">}</span><span class="s1">&quot; is not alphanumeric. Nickname has to be alphanumeric.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">user_type</span> <span class="o">==</span> <span class="s1">&#39;client&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">end_chat</span><span class="p">(</span><span class="n">nickname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">user_type</span> <span class="o">==</span> <span class="s1">&#39;analyst&#39;</span><span class="p">:</span>
+        <span class="c1"># analyst goes offline</span>
+        <span class="n">rooms</span> <span class="o">=</span> <span class="n">get_rooms</span><span class="p">(</span><span class="s1">&#39;analyst&#39;</span><span class="p">,</span> <span class="n">nickname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">rooms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rooms</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;analyst &quot;</span><span class="si">{</span><span class="n">nickname</span><span class="si">}</span><span class="s1">&quot; has to remain online, as some conversation is still ongoing.&#39;</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="n">users</span> <span class="o">=</span> <span class="n">redis_client</span><span class="o">.</span><span class="n">zscan</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;analysts_online&#39;</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;*</span><span class="si">{</span><span class="n">nickname</span><span class="si">}</span><span class="s1">*&#39;</span><span class="p">)</span>
+        <span class="n">users</span> <span class="o">=</span> <span class="p">[</span><span class="n">user</span> <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">users</span> <span class="k">if</span> <span class="n">user</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">user</span>  <span class="o">=</span> <span class="n">users</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">redis_client</span><span class="o">.</span><span class="n">zrem</span><span class="p">(</span><span class="s1">&#39;analysts_online&#39;</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+        <span class="n">analyst_count</span> <span class="o">=</span> <span class="n">redis_client</span><span class="o">.</span><span class="n">zcard</span><span class="p">(</span><span class="s1">&#39;analysts_online&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">analyst_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">redis_client</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;current_analyst&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="message_add"><a class="viewcode-back" href="../../app.html#app.redis_utils.message_add">[docs]</a><span class="k">def</span> <span class="nf">message_add</span><span class="p">(</span><span class="n">message</span><span class="p">:</span><span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    purpose: add a new message into the data store</span>
+<span class="sd">    :output: the number of new elements added</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># validate message type</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;message must be dict type. [message: type:</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">message</span><span class="p">)</span><span class="si">}</span><span class="s1">, content:</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s1">]&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="n">redis_client</span><span class="o">.</span><span class="n">zadd</span><span class="p">(</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;roomId&#39;</span><span class="p">],</span> <span class="p">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">message</span><span class="p">):</span> <span class="nb">int</span><span class="p">(</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])})</span>
+    <span class="k">return</span> <span class="n">num</span></div>
+
+<div class="viewcode-block" id="publish"><a class="viewcode-back" href="../../app.html#app.redis_utils.publish">[docs]</a><span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="n">room_id</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">from_</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    purpose: publish message</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="n">from_</span><span class="p">:</span> <span class="n">message</span><span class="p">}</span>
+    <span class="n">redis_client</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">room_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">message</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="subscribe_room"><a class="viewcode-back" href="../../app.html#app.redis_utils.subscribe_room">[docs]</a><span class="k">def</span> <span class="nf">subscribe_room</span><span class="p">(</span><span class="n">room_id</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">pubsub</span><span class="p">:</span><span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    purpose: handle message formatting, etc.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pubsub</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">room_id</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">pubsub</span><span class="o">.</span><span class="n">listen</span><span class="p">():</span>
+        <span class="n">redis_client</span><span class="o">.</span><span class="n">zadd</span><span class="p">(</span><span class="n">room_id</span><span class="p">,</span> <span class="p">{</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())})</span></div>
+
+
+<div class="viewcode-block" id="get_messages"><a class="viewcode-back" href="../../app.html#app.redis_utils.get_messages">[docs]</a><span class="k">def</span> <span class="nf">get_messages</span><span class="p">(</span><span class="n">room_id</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    purpose: retrieve all messages from a given room</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># skip the first dummy message</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">redis_client</span><span class="o">.</span><span class="n">zrange</span><span class="p">(</span><span class="n">room_id</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;UTF-8&#39;</span><span class="p">)</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">messages</span></div>
+
+<div class="viewcode-block" id="pop_messages"><a class="viewcode-back" href="../../app.html#app.redis_utils.pop_messages">[docs]</a><span class="k">def</span> <span class="nf">pop_messages</span><span class="p">(</span><span class="n">room_id</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    purpose: retrieve all messages from a given room, then remove all messages</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># skip the first dummy message</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="n">get_messages</span><span class="p">(</span><span class="n">room_id</span><span class="p">)</span>
+    <span class="n">redis_client</span><span class="o">.</span><span class="n">zremrangebyrank</span><span class="p">(</span><span class="n">room_id</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">messages</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Chuan Zhang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
