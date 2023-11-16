@@ -193,5 +193,9 @@ build succeeded.
 The HTML pages are in _build/html.
 %
 ```
-After this step, the document is ready for browsing. The generated `index.html` file under `docs/_build/html/` directory looks like the screenshot below.
+After this step, the document is ready for browsing. The generated docs under `docs/_build/html/` directory look like the screenshots below.
 ![image](https://github.com/chuan2019/chat-demo/assets/47965229/72533911-9c0c-4827-a74f-f22cda9f2a9b)
+![image](https://github.com/chuan2019/chat-demo/assets/47965229/a76ab8fb-a791-4fbc-8448-e1471625f521)
+![image](https://github.com/chuan2019/chat-demo/assets/47965229/a23d4a35-4c41-4414-8cba-8abe2cd07677)
+
+
